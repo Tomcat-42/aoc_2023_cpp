@@ -9,26 +9,20 @@ set_xmakever("2.8.5")
 --[[ Project settings ]]
 set_toolchains("clang")
 add_rules("mode.debug", "mode.release", "mode.releasedbg", "plugin.compile_commands.autoupdate")
-set_defaultmode("releasedbg")
+set_defaultmode("debug")
 set_allowedmodes("release", "debug", "releasedbg")
 set_warnings("all", "error")
 set_optimize("fastest")
 add_includedirs("include", "/usr/local/include", "/usr/include")
-add_cxflags("-Wno-attributes", "-std=c++26", "-stdlib=libc++", "-fexperimental-library", "-g", { force = true })
-add_ldflags("-L/usr/local/lib", "-lpthread", "-lc++", "-lc++abi", "-lfmt", "-lSDL2main", "-lSDL2", { force = true })
+add_cxflags("-Wno-attributes", "-std=c++26", "-stdlib=libc++", "-fexperimental-library", { force = true })
+add_ldflags("-L/usr/local/lib", "-lpthread", "-lc++", "-lc++abi", "-lfmt", "-lgtest", "-lgtest_main", { force = true })
 
 -- [[ Project dependencies ]]
--- add_repositories("hpc_research_laboratory  https://github.com/HpcResearchLaboratory/repo.git main")
-
 local aoc_deps = {}
-local aoc_cli_deps = { "cxxopts" }
--- local test_deps = { "gtest" }
--- local bench_deps = { "benchmark" }
+local aoc_cli_deps = { "fmt", "cxxopts" }
 
 add_requires(table.unpack(aoc_deps))
 add_requires(table.unpack(aoc_cli_deps))
--- add_requires(table.unpack(test_deps))
--- add_requires(table.unpack(bench_deps))
 
 -- [[ Project targets ]]
 target("aoc", function()
@@ -43,7 +37,3 @@ target("aoc_cli", function()
 	add_packages(table.unpack(aoc_cli_deps))
 	add_deps("aoc")
 end)
-
--- target("test", function() end)
---
--- target("bench", function() end)
