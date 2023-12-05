@@ -11,6 +11,7 @@
 #include <ranges>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -151,8 +152,52 @@ namespace aoc::day2 {
         }));
     };
 
-    return { pt1, [&]() -> std::string {
-              return "0";
-            } };
-  }
+    auto pt2 = [&]() -> std::string {
+      auto fewest_cubes =
+        [](const Game& game) -> std::tuple<size_t, size_t, size_t> {
+        return std::accumulate(
+          std::begin(game.sets), std::end(game.sets),
+          std::make_tuple(0z, 0z, 0z), [](auto const& acc, auto const& set) {
+            return std::accumulate(
+              std::begin(set.cubes), std::end(set.cubes), acc,
+              [](auto const& acc, auto const& cubes) {
+                auto [min_red, min_green, min_blue] = acc;
+                switch (cubes.color) {
+                case Cubes::Color::red:
+                  return std::make_tuple(
+                    std::max(min_red,
+                             static_cast<decltype(min_red)>(cubes.count)),
+                    min_green, min_blue);
+                case Cubes::Color::green:
+                  return std::make_tuple(
+                    min_red,
+                    std::max(min_green,
+                             static_cast<decltype(min_green)>(cubes.count)),
+                    min_blue);
+                case Cubes::Color::blue:
+                  return std::make_tuple(
+                    min_red, min_green,
+                    std::max(min_blue,
+                             static_cast<decltype(min_blue)>(cubes.count)));
+                }
+                return acc;
+              });
+          });
+      };
+
+      auto power_of_cubes =
+        [](std::tuple<size_t, size_t, size_t> const& cubes) -> size_t {
+        auto [red, green, blue] = cubes;
+        return red * green * blue;
+      };
+
+      auto games = std::views::istream<Game>(input);
+      auto res = games | std::views::transform(fewest_cubes) |
+        std::views::transform(power_of_cubes) | std::ranges::to<std::vector>();
+      auto total = std::accumulate(res.begin(), res.end(), 0);
+      return std::to_string(total);
+    };
+
+    return { pt1, pt2 };
+  };
 } // namespace aoc::day2
