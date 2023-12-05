@@ -1,5 +1,4 @@
 #pragma once
-#include <aoc/day1.hpp>
 
 #include <functional>
 #include <istream>

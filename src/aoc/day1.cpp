@@ -10,8 +10,8 @@
 #include <unordered_map>
 #include <utility>
 
-namespace aoc {
-  auto day1(std::istream& input)
+namespace aoc::day1 {
+  auto solution(std::istream& input)
     -> std::pair<std::function<std::string()>, std::function<std::string()>> {
     auto part1 = [&]() {
       auto extract_number = [](const std::string& s) {
@@ -46,7 +46,6 @@ namespace aoc {
 
         for (auto it = words_begin; it != words_end; ++it) {
           std::smatch match = *it;
-          println("{}", match.str(1));
           if (first_match.empty()) {
             first_match = match.str(1);
           }
@@ -71,4 +70,4 @@ namespace aoc {
 
     return { part1, part2 };
   }
-} // namespace aoc
+} // namespace aoc::day1
