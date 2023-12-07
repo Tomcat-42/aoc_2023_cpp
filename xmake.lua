@@ -19,7 +19,7 @@ add_ldflags("-L/usr/local/lib", "-lpthread", "-lc++", "-lc++abi", "-lfmt", "-lgt
 
 -- [[ Project dependencies ]]
 local aoc_deps = {}
-local aoc_cli_deps = { "fmt", "cxxopts" }
+local aoc_cli_deps = { "cxxopts" }
 
 add_requires(table.unpack(aoc_deps))
 add_requires(table.unpack(aoc_cli_deps))
@@ -27,7 +27,7 @@ add_requires(table.unpack(aoc_cli_deps))
 -- [[ Project targets ]]
 target("aoc", function()
 	set_kind("static")
-	add_files("src/aoc/*.cpp", "src/aoc/**/*.cpp")
+	add_files("src/aoc/*.cpp")
 	add_packages(table.unpack(aoc_deps))
 end)
 
