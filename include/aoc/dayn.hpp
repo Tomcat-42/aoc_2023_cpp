@@ -6,5 +6,6 @@
 
 namespace aoc::dayn {
   auto solution(std::istream& input)
-    -> std::pair<std::function<std::string()>, std::function<std::string()>>;
+    -> std::pair<std::function<std::string()>,
+                 std::function<std::string()>> const;
 } // namespace aoc::dayn

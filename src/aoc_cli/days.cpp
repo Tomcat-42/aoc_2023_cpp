@@ -1,3 +1,4 @@
+#include "aoc/day6.hpp"
 #include <aoc_cli/days.hpp>
 
 #include <aoc/day1.hpp>
@@ -16,6 +17,7 @@ namespace aoc_cli {
                             std::function<std::string()>>(std::istream&)>>
     days = { { 1, aoc::day1::solution }, { 2, aoc::day2::solution },
              { 3, aoc::day3::solution }, { 4, aoc::day4::solution },
-             { 5, aoc::day5::solution }, { 25, aoc::dayn::solution } };
+             { 5, aoc::day5::solution }, { 6, aoc::day6::solution },
+             { 25, aoc::dayn::solution } };
 
 } // namespace aoc_cli
