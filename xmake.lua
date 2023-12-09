@@ -14,8 +14,8 @@ set_allowedmodes("release", "debug", "releasedbg")
 set_warnings("all", "error")
 set_optimize("fastest")
 add_includedirs("include", "/usr/local/include", "/usr/include")
-add_cxflags("-Wno-attributes", "-std=c++26", "-stdlib=libc++", "-fexperimental-library", { force = true })
-add_ldflags("-L/usr/local/lib", "-lpthread", "-lc++", "-lc++abi", "-lfmt", "-lgtest", "-lgtest_main", { force = true })
+add_cxflags("-std=c++26", "-stdlib=libc++", "-fexperimental-library", { force = true })
+add_ldflags("-lc++", "-lc++abi", { force = true })
 
 -- [[ Project dependencies ]]
 local aoc_deps = {}

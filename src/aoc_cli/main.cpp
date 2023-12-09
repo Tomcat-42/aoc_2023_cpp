@@ -1,8 +1,8 @@
-#include <aoc/day1.hpp>
 #include <aoc_cli/days.hpp>
 
 #include <algorithm>
 #include <cxxopts.hpp>
+#include <format>
 #include <fstream>
 #include <iostream>
 #include <istream>
