@@ -7,7 +7,6 @@
 #include <ranges>
 #include <regex>
 #include <sstream>
-#include <tuple>
 #include <utility>
 
 namespace aoc::day6 {
@@ -50,11 +49,11 @@ namespace aoc::day6 {
       auto records =
         std::views::zip(problem.times, problem.distances) |
         std::views::transform([](const auto& pair) {
-          const auto [time, distance] = pair;
-          auto records = std::views::iota(0ull, time) |
-            std::views::transform(
-                           [&](const auto i) { return i * (time - i); }) |
-            std::views::filter([&](auto i) { return i > distance; });
+          auto records = std::views::iota(0ull, std::get<0>(pair)) |
+            std::views::transform([&](const auto i) {
+                           return i * (std::get<0>(pair) - i);
+                         }) |
+            std::views::filter([&](auto i) { return i > std::get<1>(pair); });
           return std::ranges::distance(records);
         });
       return std::accumulate(std::begin(records), std::end(records), 1ull,

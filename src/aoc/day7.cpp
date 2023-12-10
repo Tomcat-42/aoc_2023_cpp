@@ -483,9 +483,6 @@ namespace aoc::day7 {
     const auto pt2 = [&]() -> std::string {
       auto hands = std::views::istream<CamelCardHand>(input) |
         std::ranges::to<std::vector<CamelCardHand>>();
-      // std::ranges::copy(hands,
-      //                  std::ostream_iterator<CamelCardHand>(std::cout,
-      //                   "\n"));
       std::sort(std::begin(hands), std::end(hands), cmp_joker);
       auto indexes = std::views::iota(1U, hands.size() + 1);
       auto hand_index_pairs = std::views::zip(hands, indexes);

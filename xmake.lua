@@ -14,8 +14,9 @@ set_allowedmodes("release", "debug", "releasedbg")
 set_warnings("all", "error")
 set_optimize("fastest")
 add_includedirs("include", "/usr/local/include", "/usr/include")
-add_cxflags("-std=c++26", "-stdlib=libc++", "-fexperimental-library", { force = true })
-add_ldflags("-lc++", "-lc++abi", { force = true })
+add_cxflags("-std=c++26", "-stdlib=libc++", "-fexperimental-library", "-ltbb", "-fopenmp", { force = true })
+add_ldflags("-lc++", "-lc++abi","-lomp", { force = true })
+add_defines("_PSTL_PRAGMA_SIMD")
 
 -- [[ Project dependencies ]]
 local aoc_deps = {}

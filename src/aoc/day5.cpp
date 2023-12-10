@@ -8,14 +8,15 @@
 #include <istream>
 #include <limits>
 #include <map>
-#include <numeric>
 #include <print>
 #include <ranges>
 #include <regex>
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <utility>
+#include <vector>
 
 namespace aoc::day5 {
   using range = std::pair<std::uint32_t, std::uint32_t>;
@@ -41,14 +42,39 @@ namespace aoc::day5 {
 
     auto static from_str(const std::string&& str) -> almanac;
 
-    // NOTE: Parallelize this badboy later
-    [[nodiscard]] auto map_seeds(std::ranges::range auto&& seeds) const
-      -> std::ranges::range auto {
-      return seeds | std::views::transform([this](auto seed) {
-               return std::accumulate(
-                 std::begin(maps), std::end(maps), seed,
-                 [](auto seed, auto&& map) { return map.search(seed); });
-             });
+    [[nodiscard]] auto map_seeds(const std::vector<std::uint32_t>& seeds) const
+      -> std::uint32_t {
+      const size_t num_threads =
+        std::max(1u, std::thread::hardware_concurrency());
+      const size_t chunk_size = seeds.size() / num_threads;
+      std::vector<std::thread> threads;
+      std::vector<std::uint32_t> min_results(
+        num_threads, std::numeric_limits<std::uint32_t>::max());
+
+      for (size_t i = 0; i < num_threads; ++i) {
+        size_t start_index = i * chunk_size;
+        size_t end_index =
+          (i == num_threads - 1) ? seeds.size() : (i + 1) * chunk_size;
+
+        threads.emplace_back(
+          [this, &seeds, start_index, end_index, &min_results, i]() {
+            for (size_t j = start_index; j < end_index; ++j) {
+              std::uint32_t result = seeds[j];
+              for (const auto& map : maps) {
+                result = map.search(result);
+              }
+              min_results[i] = std::min(min_results[i], result);
+            }
+          });
+      }
+
+      for (auto& thread : threads) {
+        if (thread.joinable()) {
+          thread.join();
+        }
+      }
+
+      return *std::min_element(min_results.begin(), min_results.end());
     }
   };
 
@@ -59,7 +85,7 @@ namespace aoc::day5 {
     const auto almanac = almanac::from_str(std::move(str));
 
     const auto pt1 = [=]() {
-      return std::to_string(std::ranges::min(almanac.map_seeds(almanac.seeds)));
+      return std::to_string(almanac.map_seeds(almanac.seeds));
     };
 
     const auto pt2 = [=]() {
@@ -71,9 +97,7 @@ namespace aoc::day5 {
                    }) |
         std::views::join | std::views::common | std::ranges::to<std::vector>();
 
-      auto mapped = almanac.map_seeds(pairs);
-      auto min = std::ranges::min(mapped);
-      return std::to_string(min);
+      return std::to_string(almanac.map_seeds(pairs));
     };
 
     return { pt1, pt2 };
