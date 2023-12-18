@@ -46,9 +46,7 @@ namespace std {
 
     template <typename FormatContext>
     auto format(const aoc::day8::graph& g, FormatContext& ctx) const {
-      return std::formatter<
-               std::map<std::string, std::pair<std::string, std::string>>>()
-        .format(g.nodes, ctx);
+      return std::format_to(ctx.out(), "{}", g.nodes);
     }
   };
 
