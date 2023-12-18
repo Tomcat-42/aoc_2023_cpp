@@ -9,13 +9,16 @@
 #include <print>
 #include <ranges>
 #include <utility>
+#include <vector>
 
 namespace aoc::day13 {
 
   [[nodiscard]] auto pattern::find_reflections() const
-    -> std::pair<std::uint64_t, std::uint64_t> {
-    auto num = 0ull;
-    auto sum = 0ull;
+    -> std::optional<std::vector<
+      std::pair<std::uint64_t, std::pair<std::uint64_t, reflection_type>>>> {
+    std::vector<
+      std::pair<std::uint64_t, std::pair<std::uint64_t, reflection_type>>>
+      reflections;
 
     auto width = lines.empty() ? 0 : lines[0].size();
     for (auto j = 0ull; j < width - 1; ++j) {
@@ -29,10 +32,9 @@ namespace aoc::day13 {
         }
       }
 sum:
-      if (is_to_sum) {
-        num += 1;
-        sum += (j + 1);
-      }
+      if (is_to_sum)
+        reflections.push_back(
+          { (j + 1), { (j + 1), reflection_type::horizontal } });
     }
     for (auto i = 0ull; i < lines.size() - 1; ++i) {
       auto is_to_sum = true;
@@ -43,12 +45,13 @@ sum:
         }
       }
       if (is_to_sum) {
-        num += 1;
-        sum += 100 * (i + 1);
+        reflections.push_back(
+          { 100 * (i + 1), { (i + 1), reflection_type::vertical } });
       }
     }
 
-    return { sum, num };
+    return reflections.empty() ? std::nullopt
+                               : std::make_optional(std::move(reflections));
   }
 
   auto pattern::flip_all_and_find_different_reflection() -> std::uint64_t {
@@ -64,41 +67,29 @@ sum:
           break;
       }
     };
-
-    auto [original_reflections_sum, original_reflections_num] =
-      find_reflections();
+    auto original_reflections = find_reflections();
 
     auto width = lines.empty() ? 0 : lines[0].size();
     auto height = lines.size();
     for (auto i = 0ull; i < height; ++i) {
       for (auto j = 0ull; j < width; ++j) {
         flip(lines[i][j]);
-        auto [reflection_sum, reflection_num] = find_reflections();
-        std::println("original_reflections_num: {}, reflection_num: {}",
-                     original_reflections_num, reflection_num);
-        // case 1
-        if ((original_reflections_num == 0 && reflection_num == 1) ||
-            (original_reflections_num == 1 && reflection_num == 1)) {
-          std::println("lines[i][j]: {}", lines[i][j]);
-          std::println("original_reflections_sum: {}, reflection_sum: {}",
-                       original_reflections_sum, reflection_sum);
-
-          std::println("i: {}, j: {}", i, j);
-          return reflection_sum;
-        } else if (original_reflections_num == 1 && reflection_num == 2) {
-          std::println("original_reflections_sum: {}, reflection_sum: {}",
-                       original_reflections_sum, reflection_sum);
-
-          return std::abs(static_cast<int>(reflection_sum) -
-                          static_cast<int>(original_reflections_sum));
+        auto reflections = find_reflections();
+        if (reflections && *reflections != *original_reflections) {
+          auto filtered =
+            reflections.value() | std::views::filter([&](auto const& p) {
+              return std::ranges::find(*original_reflections, p) ==
+                std::end(*original_reflections);
+            }) |
+            std::views::take(1) |
+            std::views::transform([](auto const& p) { return p.first; });
+          return *std::begin(filtered);
         }
 
         flip(lines[i][j]);
       }
     }
-
-    std::cout << "Original pattern: \n" << original_reflections_num << '\n';
-    return original_reflections_sum;
+    return original_reflections->front().first;
   }
 
   auto solution(std::istream& input)
@@ -109,21 +100,21 @@ sum:
 
     const auto pt1 = [=]() -> std::string {
       std::ranges::copy(patterns, std::ostream_iterator<pattern>(std::cout));
-      std::println("patterns: {}", patterns.size());
       auto sum = std::accumulate(std::begin(patterns), std::end(patterns), 0ull,
                                  [](auto acc, auto const& p) {
-                                   return acc + p.find_reflections().first;
+                                   return acc +
+                                     p.find_reflections().value().front().first;
                                  });
 
       return std::to_string(sum);
     };
 
     const auto pt2 = [=]() mutable -> std::string {
-      auto sum = std::accumulate(std::begin(patterns), std::end(patterns), 0ull,
-                                 [](auto acc, auto& p) mutable {
-                                   return acc +
-                                     p.flip_all_and_find_different_reflection();
-                                 });
+      auto sum = std::accumulate(
+        std::begin(patterns), std::end(patterns), 0ull, [](auto acc, auto& p) {
+          return acc + p.flip_all_and_find_different_reflection();
+        });
+
       return std::to_string(sum);
     };
 
