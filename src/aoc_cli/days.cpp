@@ -7,6 +7,7 @@
 #include <aoc/day13.hpp>
 #include <aoc/day14.hpp>
 #include <aoc/day15.hpp>
+#include <aoc/day16.hpp>
 #include <aoc/day2.hpp>
 #include <aoc/day3.hpp>
 #include <aoc/day4.hpp>
@@ -31,6 +32,7 @@ namespace aoc_cli {
              { 9, aoc::day9::solution },   { 10, aoc::day10::solution },
              { 11, aoc::day11::solution }, { 12, aoc::day12::solution },
              { 13, aoc::day13::solution }, { 14, aoc::day14::solution },
-             { 15, aoc::day15::solution }, { 25, aoc::dayn::solution } };
+             { 15, aoc::day15::solution }, { 16, aoc::day16::solution },
+             { 25, aoc::dayn::solution } };
 
 } // namespace aoc_cli
